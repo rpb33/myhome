@@ -1,7 +1,14 @@
+#!/usr/env python
 
+print("hello world")
 
 import time
-import GPIO
+import datetime
+#import GPIO
+import math
+
+# output filename
+filename = "output.csv"
 
 # number of complete cycles (ramp up and down)
 cycle_N_total = 3
@@ -19,43 +26,69 @@ PWM2_f = 60
 PWM2_dc = 0
 
 # LED1 GPIO pin
+LED1_pin = 1
 
 # LED2 GPIO pin
+LED2_pin = 2
 
 # number of readings at each level
 readings_N_total = 3
 
 # pause between readings (s)
-reading_pause = 0.3
+reading_pause = 0.05
 
 # pause between steps (s)
-step_pause = 0.5
+step_pause = 0.05
 
 total_time = 2.0 * (step_pause * 200 + reading_pause * readings_N_total * 200) * cycle_N_total
+print('total time %s seconds') % total_time
+time_start = datetime.datetime.now()
 
+f = open(filename, 'w')
+#f.write('cycle_N,overall_SN,LED1_int,LED2_int,avg_int,reading_N,LDR1_val,LDR2_val,LDR3_val,TSL_val\n')
+f.write('cycle_N,cycle_N_total,light_level,reading_number,PWM1_dc,PWM2_dc\n')
+f.close
 
-open file
-print line (cycle_N	overall_SN,LED1_int,LED2_int,avg_int,reading_N,LDR1_val,LDR2_val,LDR3_val,TSL_val)
-close file
-
-start pwm1
-start pwm2
+#start pwm1
+#start pwm2
 
 
 for cycle_N in range(1, cycle_N_total+1):
-    for light_level in range(0,201):
+    for light_level in range(0,200):
         for reading_number in range(1,readings_N_total+1):
-            # <<<read light levels from sensors>>>
-            pause (reading_pause) 
-        pause (step_pause)
+            # <<<read light levels from sensors, and write>>>
+            f = open(filename, 'a')
+            str = ('%s,%s,%s,%s,%s,%s\n') % (cycle_N, cycle_N_total, light_level, reading_number, PWM1_dc, PWM2_dc)
+            f.write(str)
+            f.close
+            time.sleep(reading_pause) 
+        time.sleep(step_pause)
         
         #increment
         if light_level % 2 == 0: #even light level, so increment LED 1
             PWM1_dc += 1
-            set PWM1 dc
+            #set PWM1 dc
         else: # odd light level, so increment LED 2
             PWM2_dc += 1
-            set PWM2 dc
+            #set PWM2 dc
     
-    for light_level in range(200, -1, -1): # ramp down        
+    for light_level in range(200, 0, -1): # ramp down
+        for reading_number in range(1,readings_N_total+1):
+            # <<<read light levels from sensors, and write>>>
+            f = open(filename, 'a')
+            str = ('%s,%s,%s,%s,%s,%s\n') % (cycle_N, cycle_N_total, light_level, reading_number, PWM1_dc, PWM2_dc)
+            f.write(str)
+            f.close
+            time.sleep(reading_pause) 
+        time.sleep(step_pause)
+        
+        #increment
+        if light_level % 2 == 0: #even light level, so increment LED 1
+            PWM1_dc -= 1
+            #set PWM1 dc
+        else: # odd light level, so increment LED 2
+            PWM2_dc -= 1
+            #set PWM2 dc
 
+time_finish = datetime.datetime.now()
+print('total time elapsed is %s') % (time_finish - time_start)
