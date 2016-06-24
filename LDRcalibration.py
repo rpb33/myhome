@@ -1,4 +1,4 @@
-#!/usr/env python
+#!/usr/bin/env python
 
 print("hello world")
 
@@ -6,7 +6,33 @@ import time
 import datetime
 #import GPIO
 import math
+#import spidev
+import os
+import datetime
+#import tsl_2561_bechhofer_low as TSL
+#import randomgen
 
+'''
+# For MCP3008
+# Open SPI bus
+spi = spidev.SpiDev()
+spi.open(0,0)
+# Function to read SPI data from MCP3008 chip
+# Channel must be an integer 0-7
+
+# Read SPI (MCP3008, 10-bit ADC)
+def readchannel(channel):
+    """docstring for readchannel"""
+    adc = spi.xfer2([1,(8+channel)<<4,0])
+    data = ((adc[1]&3) << 8) + adc[2]
+    return data
+    
+# To read the TSL2561, use TSL.readLux(1)
+'''
+
+
+
+    
 # output filename
 filename = "output.csv"
 
@@ -35,10 +61,10 @@ LED2_pin = 2
 readings_N_total = 3
 
 # pause between readings (s)
-reading_pause = 0.05
+reading_pause = 0.1
 
 # pause between steps (s)
-step_pause = 0.05
+step_pause = 0.04
 
 total_time = 2.0 * (step_pause * 200 + reading_pause * readings_N_total * 200) * cycle_N_total
 print('total time %s seconds') % total_time
@@ -58,7 +84,8 @@ for cycle_N in range(1, cycle_N_total+1):
         for reading_number in range(1,readings_N_total+1):
             # <<<read light levels from sensors, and write>>>
             f = open(filename, 'a')
-            str = ('%s,%s,%s,%s,%s,%s\n') % (cycle_N, cycle_N_total, light_level, reading_number, PWM1_dc, PWM2_dc)
+            random_number = randomgen.rannum(100)
+            str = ('%s,%s,%s,%s,%s,%s\n') % (cycle_N, random_number, light_level, reading_number, PWM1_dc, PWM2_dc)
             f.write(str)
             f.close
             time.sleep(reading_pause) 
