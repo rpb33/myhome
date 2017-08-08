@@ -30,6 +30,7 @@ def readchannel(channel):
 # To read the TSL2561, use TSL.readLux(1)
 '''
 
+#added this comment to test git
 
 
     
